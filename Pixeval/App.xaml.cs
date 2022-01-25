@@ -79,9 +79,7 @@ namespace Pixeval
             var regKey1 = Registry.LocalMachine.OpenSubKey(Environment.Is64BitOperatingSystem
                 ? "SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
                 : "SOFTWARE\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")?.GetValue("pv") as string;
-            var regKey2 = Registry.LocalMachine.OpenSubKey(Environment.Is64BitOperatingSystem
-                ? "SOFTWARE\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
-                : "Software\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")?.GetValue("pv") as string;
+            var regKey2 = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}")?.GetValue("pv") as string;
 
             return !regKey1.IsNullOrEmpty() || !regKey2.IsNullOrEmpty();
         }
