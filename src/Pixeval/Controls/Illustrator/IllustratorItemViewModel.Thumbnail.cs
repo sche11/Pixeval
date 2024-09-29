@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Pixeval.AppManagement;
 using Pixeval.CoreApi.Model;
 using Pixeval.Util;
@@ -21,7 +20,7 @@ public partial class IllustratorItemViewModel
     [ObservableProperty]
     private SolidColorBrush _avatarBorderBrush = _defaultAvatarBorderColorBrush;
 
-    public List<SoftwareBitmapSource> BannerSources { get; } = new(3);
+    public List<ImageSource> BannerSources { get; } = new(3);
 
     /// <summary>
     /// Dominant color of the "No Image" image
@@ -37,7 +36,7 @@ public partial class IllustratorItemViewModel
         var dominantColor = await UiHelper.GetDominantColorAsync(stream, false);
         AvatarBorderBrush = new SolidColorBrush(dominantColor);
         stream.Position = 0;
-        var source = await stream.GetBitmapImageAsync(true, 100);
+        var source = await stream.GetBitmapImageAsync(true, 100, AvatarUrl);
         AvatarSource = source;
 
         await LoadBannerSourceAsync();
@@ -46,8 +45,8 @@ public partial class IllustratorItemViewModel
     public override void Dispose()
     {
         AvatarSource = null;
-        foreach (var softwareBitmapSource in BannerSources)
-            softwareBitmapSource.Dispose();
+        // foreach (var softwareBitmapSource in BannerSources)
+        //     softwareBitmapSource.Dispose();
         BannerSources.Clear();
     }
 
@@ -74,7 +73,7 @@ public partial class IllustratorItemViewModel
                 Result<Stream>.Success(var stream))
                 return true;
 
-            var bitmapSource = await stream.GetSoftwareBitmapSourceAsync(true);
+            var bitmapSource = await stream.GetBitmapImageAsync(true, url: viewModel.GetThumbnailUrl());
             BannerSources.Add(bitmapSource);
             return true;
         }

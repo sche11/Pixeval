@@ -38,6 +38,7 @@ using Microsoft.UI.Xaml;
 using Pixeval.Controls.Windowing;
 using Pixeval.CoreApi.Global.Enum;
 using Pixeval.Settings.Models;
+using Pixeval.Upscaling;
 using WinUI3Utilities;
 using Symbol = FluentIcons.Common.Symbol;
 
@@ -105,7 +106,12 @@ public partial class SettingsPageViewModel : UiObservableObject, IDisposable
                     t => t.UseFileCache),
                 new EnumAppSettingsEntry(AppSettings,
                     t => t.DefaultSelectedTabItem,
-                    MainPageTabItemExtension.GetItems())
+                    MainPageTabItemExtension.GetItems()),
+                new StringAppSettingsEntry(AppSettings, 
+                    t => t.WebCookie)
+                {
+                    Placeholder = SettingsPageResources.WebCookieTextBoxPlaceholderText
+                }
             },
             new(SettingsEntryCategory.BrowsingExperience)
             {
@@ -127,6 +133,26 @@ public partial class SettingsPageViewModel : UiObservableObject, IDisposable
                     Symbol.SubtractCircle,
                     () => _ = Launcher.LaunchUriAsync(new Uri("https://www.pixiv.net/settings/viewing")))
             },
+
+            new (SettingsEntryCategory.AiUpscaler)
+            {
+                new EnumAppSettingsEntry(AppSettings, 
+                    t => t.UpscalerModel,
+                    RealESRGANModelExtension.GetItems())
+                {
+                    DescriptionUri = new Uri("https://github.com/xinntao/Real-ESRGAN/blob/master/README_CN.md")
+                },
+                new IntAppSettingsEntry(AppSettings,
+                    t => t.UpscalerScaleRatio)
+                {
+                    Max = 4,
+                    Min = 2
+                },
+                new EnumAppSettingsEntry(AppSettings,
+                    t => t.UpscalerOutputType,
+                UpscalerOutputTypeExtension.GetItems())
+            },
+
             new(SettingsEntryCategory.Search)
             {
                 new StringAppSettingsEntry(AppSettings,
@@ -297,7 +323,7 @@ public partial class SettingsPageViewModel : UiObservableObject, IDisposable
             DownloadingUpdate = true;
             UpdateMessage = SettingsPageResources.DownloadingUpdate;
             var filePath = Path.Combine(AppKnownFolders.Temporary.Self.Path, appReleaseModel.ReleaseUri.Segments[^1]);
-            await using var fileStream = File.OpenWrite(filePath);
+            await using var fileStream = IoHelper.OpenAsyncWrite(filePath);
             var exception = await client.DownloadStreamAsync(fileStream, appReleaseModel.ReleaseUri, _cancellationTokenSource.Token,
                 new Progress<double>(progress => DownloadingUpdateProgress = progress));
             // ReSharper disable once DisposeOnUsingVariable

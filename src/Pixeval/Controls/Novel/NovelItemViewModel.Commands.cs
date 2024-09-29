@@ -28,7 +28,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Pixeval.CoreApi.Model;
 using Pixeval.Download;
-using Pixeval.Download.Models;
 using Pixeval.Util.UI;
 
 namespace Pixeval.Controls;
@@ -40,7 +39,7 @@ public partial class NovelItemViewModel
     protected override void SaveCommandOnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         var hWnd = null as ulong?;
-        var documentViewerViewModel = null as DocumentViewerViewModel;
+        DocumentViewerViewModel? documentViewerViewModel = null;
         switch (args.Parameter)
         {
             case (ulong h, DocumentViewerViewModel vm):
@@ -62,7 +61,7 @@ public partial class NovelItemViewModel
     protected override async void SaveAsCommandOnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         ulong hWnd;
-        var documentViewerViewModel = null as DocumentViewerViewModel;
+        DocumentViewerViewModel? documentViewerViewModel = null;
         switch (args.Parameter)
         {
             case (ulong h, DocumentViewerViewModel vm):

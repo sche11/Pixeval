@@ -48,7 +48,7 @@ public sealed partial class NovelViewerPage
     public override void OnPageActivated(NavigationEventArgs e, object? parameter)
     {
         // 此处this.XamlRoot为null
-        _viewModel = HWnd.GetViewModel(parameter);
+        _viewModel = HWnd.GetNovelViewerPageViewModelFromHandle(parameter);
 
         _viewModel.DetailedPropertyChanged += (sender, args) =>
         {
@@ -63,7 +63,6 @@ public sealed partial class NovelViewerPage
             EntryViewerSplitView.NavigationViewSelect(vm.Tags[0]);
             ThumbnailItemsView.StartBringItemIntoView(vm.CurrentNovelIndex, new BringIntoViewOptions { AnimationDesired = true });
         };
-
 
         _viewModel.PropertyChanged += (sender, args) =>
         {
@@ -82,6 +81,7 @@ public sealed partial class NovelViewerPage
 
     private void NovelViewerPage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        TitleBarArea.SetDragRegionForCustomTitleBar();
         CommandBorderDropShadow.Receivers.Add(DocumentViewer);
         ThumbnailListDropShadow.Receivers.Add(DocumentViewer);
 
@@ -189,4 +189,11 @@ public sealed partial class NovelViewerPage
     private void OpenPane_OnRightTapped(object sender, RightTappedRoutedEventArgs e) => EntryViewerSplitView.PinPane = true;
 
     public (ulong, DocumentViewerViewModel?) DownloadParameter(DocumentViewerViewModel? viewModel) => (HWnd, viewModel);
+
+    public Visibility IsLogoVisible()
+    {
+        return WindowFactory.GetWindowForElement(this).HWnd != WindowFactory.RootWindow.HWnd
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
 }

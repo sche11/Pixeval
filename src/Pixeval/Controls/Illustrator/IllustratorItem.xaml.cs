@@ -24,7 +24,6 @@ using System.Numerics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Media;
 using WinUI3Utilities.Attributes;
 using Pixeval.Controls.Windowing;
@@ -75,7 +74,7 @@ public sealed partial class IllustratorItem
         }
     }
 
-    private Thickness GetIllustrationAt(List<SoftwareBitmapSource> sources)
+    private Thickness GetIllustrationAt(List<ImageSource> sources)
     {
         BannerContainer.Children.Clear();
         var i = 0;

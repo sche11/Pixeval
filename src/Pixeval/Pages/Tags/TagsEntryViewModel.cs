@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media;
 using Pixeval.Controls;
 using Pixeval.CoreApi.Model;
 using Pixeval.Util;
@@ -16,7 +16,7 @@ namespace Pixeval.Pages.Tags;
 /// <summary>
 /// 由于<see cref="Illustration"/>不一定存在，所以这个类不直接继承 <see cref="IllustrationItemViewModel"/>
 /// </summary>
-public partial class TagsEntryViewModel : ObservableObject, IEntry, IDisposable
+public partial class TagsEntryViewModel : ObservableObject, IEntry
 {
     private TagsEntryViewModel(string path)
     {
@@ -34,7 +34,7 @@ public partial class TagsEntryViewModel : ObservableObject, IEntry, IDisposable
     /// <remarks>
     /// Should be private set
     /// </remarks>
-    [ObservableProperty] private SoftwareBitmapSource? _thumbnail;
+    [ObservableProperty] private ImageSource? _thumbnail;
 
     private FrozenSet<string>? _tagsSet;
 
@@ -74,7 +74,7 @@ public partial class TagsEntryViewModel : ObservableObject, IEntry, IDisposable
                 {
                     var image = await Image.LoadAsync(FullPath);
                     image.SetIdTags(Id, TagsSet);
-                    await using var stream = File.OpenWrite(FullPath);
+                    await using var stream = IoHelper.OpenAsyncWrite(FullPath);
                     await image.SaveAsync(stream, image.Metadata.DecodedImageFormat!);
                     return null;
                 }
@@ -126,8 +126,6 @@ public partial class TagsEntryViewModel : ObservableObject, IEntry, IDisposable
 
     private static async void LoadThumbnail(TagsEntryViewModel entry, string path)
     {
-        entry.Thumbnail = await (await IoHelper.GetFileThumbnailAsync(path)).GetSoftwareBitmapSourceAsync(true);
+        entry.Thumbnail = await (await IoHelper.GetFileThumbnailAsync(path)).GetBitmapImageAsync(true, url: path);
     }
-
-    public void Dispose() => Thumbnail?.Dispose();
 }

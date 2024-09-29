@@ -23,13 +23,11 @@ using System.Threading.Tasks;
 using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
 using Pixeval.AppManagement;
-using Pixeval.Controls;
 using Pixeval.Controls.Windowing;
 using Pixeval.CoreApi;
 using Pixeval.CoreApi.Net;
 using Pixeval.Database.Managers;
 using Pixeval.Download;
-using Pixeval.Download.Models;
 using Pixeval.Logging;
 using Pixeval.Util.IO;
 using Pixeval.Util.UI;
@@ -37,7 +35,7 @@ using Windows.Storage;
 
 namespace Pixeval;
 
-public partial class AppViewModel(App app) : IDisposable
+public class AppViewModel(App app) : IDisposable
 {
     private bool _activatedByProtocol;
 

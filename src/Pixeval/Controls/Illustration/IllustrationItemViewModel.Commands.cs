@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using Pixeval.Download;
 using Microsoft.Extensions.DependencyInjection;
-using Pixeval.Download.Models;
 using Pixeval.Util.IO;
 using Symbol = FluentIcons.Common.Symbol;
 
@@ -49,7 +48,7 @@ public partial class IllustrationItemViewModel
     protected override void SaveCommandOnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         var hWnd = null as ulong?;
-        var getImageStream = null as GetImageStreams;
+        GetImageStreams? getImageStream = null;
         switch (args.Parameter)
         {
             case (ulong h, GetImageStreams f):
@@ -71,7 +70,7 @@ public partial class IllustrationItemViewModel
     protected override async void SaveAsCommandOnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         ulong hWnd;
-        var getImageStream = null as GetImageStreams;
+        GetImageStreams? getImageStream = null;
         switch (args.Parameter)
         {
             case (ulong h, GetImageStreams f):
@@ -146,14 +145,20 @@ public partial class IllustrationItemViewModel
 
         var ib = hWnd?.InfoGrowlReturn("");
 
-        var progress = null as Progress<double>;
+        Progress<double>? progress = null;
         if (ib is not null)
             if (!IsUgoira)
                 progress = new Progress<double>(d => ib.Title = EntryItemResources.UgoiraProcessing.Format(d));
             else
                 ib.Title = EntryItemResources.ImageProcessing;
-        if (getImageStream(false) is { } sources)
+        if (getImageStream(App.AppViewModel.AppSettings.BrowseOriginalImage) is { } sources)
         {
+            if (sources is [var src])
+            {
+                await UiHelper.ClipboardSetBitmapAsync(src);
+                hWnd?.RemoveSuccessGrowlAfterDelay(ib!, EntryItemResources.ImageSetToClipBoard);
+                return;
+            }
             var source = await sources.UgoiraSaveToStreamAsync((await UgoiraMetadata).Delays.ToArray(), null, progress);
             await UiHelper.ClipboardSetBitmapAsync(source);
             hWnd?.RemoveSuccessGrowlAfterDelay(ib!, EntryItemResources.ImageSetToClipBoard);

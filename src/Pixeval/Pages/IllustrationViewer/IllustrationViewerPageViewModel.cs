@@ -40,6 +40,24 @@ public partial class IllustrationViewerPageViewModel : DetailedUiObservableObjec
     [ObservableProperty]
     private bool _isFullScreen;
 
+    [ObservableProperty]
+    private bool _showPixevalIcon = true;
+
+    [ObservableProperty]
+    private string _additionalText = string.Empty;
+
+    [ObservableProperty]
+    private bool _additionalTextBlockVisible = true;
+
+    [ObservableProperty]
+    private bool _upscalerProgressBarVisible;
+
+    [ObservableProperty]
+    private int _upscalerProgress;
+
+    [ObservableProperty]
+    private string? _upscalerProgressText;
+
     /// <summary>
     /// 
     /// </summary>
@@ -52,7 +70,7 @@ public partial class IllustrationViewerPageViewModel : DetailedUiObservableObjec
         CurrentIllustrationIndex = currentIllustrationIndex;
 
         InitializeCommands();
-        FullScreenCommand.GetFullScreenCommand(false);
+        FullScreenCommand.RefreshFullScreenCommand(false);
     }
 
     /// <summary>
@@ -239,6 +257,11 @@ public partial class IllustrationViewerPageViewModel : DetailedUiObservableObjec
 
     #region Helper Functions
 
+    public string GetCurrentIllustrationDimensionText(int index)
+    {
+        return CurrentIllustration.DimensionText;
+    }
+
     public string? NextButtonText => NextButtonAction switch
     {
         true => EntryViewerPageResources.NextPageOrIllustration,
@@ -300,13 +323,13 @@ public partial class IllustrationViewerPageViewModel : DetailedUiObservableObjec
     private void InitializeCommands()
     {
         FullScreenCommand.ExecuteRequested += FullScreenCommandOnExecuteRequested;
-        FullScreenCommand.GetFullScreenCommand(false);
+        FullScreenCommand.RefreshFullScreenCommand(false);
     }
 
     private void FullScreenCommandOnExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         IsFullScreen = !IsFullScreen;
-        FullScreenCommand.GetFullScreenCommand(IsFullScreen);
+        FullScreenCommand.RefreshFullScreenCommand(IsFullScreen);
     }
 
     public XamlUICommand InfoAndCommentsCommand { get; } =

@@ -62,20 +62,32 @@
                         </ItemsRepeater.Layout>
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="local:DependencyViewModel">
-                                <controls:SettingsCard
-                                    MinHeight="0"
-                                    ActionIcon="{fluent:SymbolIcon Symbol=Open}"
-                                    Click="LaunchUri"
-                                    IsClickEnabled="True"
-                                    Tag="{x:Bind Url}">
-                                    <controls:SettingsCard.Header>
+                                <controls:SettingsExpander>
+                                    <controls:SettingsExpander.Content>
+                                        <AppBarButton
+                                            Click="LaunchUri"
+                                            Icon="{fluent:SymbolIcon Symbol=Open}"
+                                            IsCompact="True"
+                                            LabelPosition="Collapsed"
+                                            Tag="{x:Bind Url}" />
+                                    </controls:SettingsExpander.Content>
+                                    <controls:SettingsExpander.Header>
                                         <TextBlock>
                                             <Run FontWeight="Bold" Text="{x:Bind Name}" />
                                             <Run Text="    " />
                                             <Run FontStyle="Italic" Text="{x:Bind Author}" />
                                         </TextBlock>
-                                    </controls:SettingsCard.Header>
-                                </controls:SettingsCard>
+                                    </controls:SettingsExpander.Header>
+                                    <controls:SettingsExpander.Items>
+                                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+                                            <labs:MarkdownTextBlock Margin="5" Text="{x:Bind License}">
+                                                <labs:MarkdownTextBlock.Config>
+                                                    <labs:MarkdownConfig />
+                                                </labs:MarkdownTextBlock.Config>
+                                            </labs:MarkdownTextBlock>
+                                        </controls:SettingsCard>
+                                    </controls:SettingsExpander.Items>
+                                </controls:SettingsExpander>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>

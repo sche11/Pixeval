@@ -27,7 +27,6 @@ using System.Threading.Tasks;
 using Pixeval.Controls;
 using Pixeval.CoreApi.Model;
 using Pixeval.Database;
-using Pixeval.Download.Macros;
 using Pixeval.Options;
 using Pixeval.Util;
 using Pixeval.Util.IO;
@@ -74,7 +73,7 @@ public class NovelDownloadTaskGroup : DownloadTaskGroup
         var imgExt = IoHelper.GetIllustrationExtension(IllustrationDownloadFormat);
         if (IllustrationDownloadFormat is not IllustrationDownloadFormat.Original)
             DocumentViewModel.ImageExtension = imgExt;
-        for (var i = 0; i < DocumentViewModel.TotalCount; ++i)
+        for (var i = 0; i < DocumentViewModel.TotalImagesCount; ++i)
         {
             var url = DocumentViewModel.AllUrls[i];
             var name = Path.Combine(directory, DocumentViewModel.AllTokens[i]);
@@ -134,6 +133,9 @@ public class NovelDownloadTaskGroup : DownloadTaskGroup
     {
         if (NovelContent == null!)
             SetNovelContent(await App.AppViewModel.MakoClient.GetNovelContentAsync(Entry.Id));
+
+        if (TasksSet.Count is 0)
+            await AllTasksDownloadedAsync();
     }
 
     protected override async Task AfterAllDownloadAsyncOverride(DownloadTaskGroup sender, CancellationToken token = default)
@@ -143,7 +145,7 @@ public class NovelDownloadTaskGroup : DownloadTaskGroup
             var i = 0;
             foreach (var imageDownloadTask in TasksSet)
             {
-                DocumentViewModel.SetStream(i, File.OpenRead(imageDownloadTask.Destination));
+                DocumentViewModel.SetStream(i, IoHelper.OpenAsyncRead(imageDownloadTask.Destination));
                 ++i;
             }
             
@@ -161,6 +163,8 @@ public class NovelDownloadTaskGroup : DownloadTaskGroup
             IoHelper.DeleteEmptyFolder(PdfTempFolderPath);
             return;
         }
+
+        DocumentViewModel.InitImages();
 
         var content = NovelDownloadFormat switch
         {

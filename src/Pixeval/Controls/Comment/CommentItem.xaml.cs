@@ -20,7 +20,7 @@
 
 using System;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media;
 using Pixeval.AppManagement;
 using Pixeval.Pages.IllustratorViewer;
 using Pixeval.Util.IO;
@@ -47,8 +47,8 @@ public sealed partial class CommentItem
         _ = viewModel.LoadAvatarSource();
         if (viewModel.IsStamp)
         {
-            var result = await App.AppViewModel.MakoClient.DownloadSoftwareBitmapSourceAsync(viewModel.StampSource);
-            block.StickerImageContent.Source = result is Result<SoftwareBitmapSource>.Success { Value: var avatar }
+            var result = await App.AppViewModel.MakoClient.DownloadBitmapImageAsync(viewModel.StampSource);
+            block.StickerImageContent.Source = result is Result<ImageSource>.Success { Value: var avatar }
                 ? avatar
                 : await AppInfo.ImageNotAvailable;
         }
